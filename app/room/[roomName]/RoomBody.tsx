@@ -10,6 +10,7 @@ import {
 } from '@livekit/components-react';
 import { Track } from 'livekit-client';
 import { canBroadcast, type Role } from '@/lib/livekit/roles';
+import { QualityPanel } from './QualityPanel';
 
 export function RoomBody({ role }: { role: Role }) {
   const trackRefs = useTracks(
@@ -38,6 +39,8 @@ export function RoomBody({ role }: { role: Role }) {
       <GridLayout tracks={trackRefs} style={{ flex: 1, minHeight: 0 }}>
         <ParticipantTile />
       </GridLayout>
+
+      <QualityPanel />
 
       {canBroadcast(role) ? (
         <ControlBar
