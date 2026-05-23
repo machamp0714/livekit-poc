@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import {
   LiveKitRoom,
   RoomAudioRenderer,
-  useParticipants,
-  useConnectionState,
 } from '@livekit/components-react';
 import '@livekit/components-styles';
 import { canBroadcast, type Role } from '@/lib/livekit/roles';
