@@ -14,7 +14,7 @@ export default function LobbyPage() {
     event.preventDefault();
     if (!name.trim() || !roomName.trim()) return;
     const query = new URLSearchParams({ name: name.trim(), role });
-    router.push(`/room/${encodeURIComponent(roomName.trim())}?${query.toString()}`);
+    router.push(`/precall?${query.toString()}`);
   }
 
   return (
@@ -43,7 +43,7 @@ export default function LobbyPage() {
             ))}
           </select>
         </label>
-        <button type="submit">入室</button>
+        <button type="submit">接続テストへ</button>
       </form>
     </main>
   )
