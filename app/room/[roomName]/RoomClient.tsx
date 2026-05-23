@@ -8,7 +8,8 @@ import {
   useConnectionState,
 } from '@livekit/components-react';
 import '@livekit/components-styles';
-import type { Role } from '@/lib/livekit/roles';
+import { canBroadcast, type Role } from '@/lib/livekit/roles';
+import { RoomBody } from './RoomBody';
 
 type Props = { roomName: string; name: string; role: Role };
 
@@ -55,34 +56,20 @@ export function RoomClient({ roomName, name, role }: Props) {
   if (error) return <p style={{ color: 'red' }}>接続エラー: {error}</p>;
   if (!token || !serverUrl) return <p>トークン取得中…</p>;
 
+  const broadcast = canBroadcast(role);
+
   return (
     <LiveKitRoom
       token={token}
       serverUrl={serverUrl}
       connect
-      audio={false}
-      video={false}
+      audio={broadcast}
+      video={broadcast}
       data-lk-theme="default"
     >
-      <RoomStatus />
+      <RoomBody role={role} />
       <RoomAudioRenderer />
     </LiveKitRoom>
-  );
-}
-
-function RoomStatus() {
-  const connectionState = useConnectionState();
-  const participants = useParticipants();
-  return (
-    <section style={{ marginTop: 16 }}>
-      <p>接続状態: {connectionState}</p>
-      <p>参加者数: {participants.length}</p>
-      <ul>
-        {participants.map((p) => (
-          <li key={p.sid}>{p.name || p.identity}</li>
-        ))}
-      </ul>
-    </section>
   );
 }
 
