@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { videoGrantFor } from './roles';
+import { videoGrantFor, canBroadcast } from './roles';
 
 describe('videoGrantFor', () => {
   it('モデレーターはpublish/subscribe可能で roomAdmin', () => {
@@ -32,6 +32,16 @@ describe('videoGrantFor', () => {
       canPublish: false,
       canSubscribe: true,
     });
+  });
+});
+
+describe('canBroadcast', () => {
+  it.each([
+    ['moderator', true],
+    ['panelist', true],
+    ['observer', false],
+  ] as const)('%s -> %s', (role, expected) => {
+    expect(canBroadcast(role)).toBe(expected);
   });
 });
 

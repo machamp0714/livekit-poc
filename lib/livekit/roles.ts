@@ -20,3 +20,7 @@ export function videoGrantFor(role: Role, roomName: string): VideoGrant {
   }
 }
 
+export function canBroadcast(role: Role): boolean {
+  return role === 'moderator' || role === 'panelist';
+}
+
