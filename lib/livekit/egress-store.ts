@@ -9,6 +9,8 @@ export interface EgressRecord {
   endedAt?: number;
   durationSec?: number;
   fileSize?: number;
+  error?: string;
+  errorCode?: number;
 }
 
 const byId = new Map<string, EgressRecord>();
