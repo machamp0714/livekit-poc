@@ -1,0 +1,22 @@
+port: 7880
+log_level: info
+
+rtc:
+  tcp_port: 7881
+  udp_port: 7882
+  use_external_ip: false
+  use_ice_lite: true
+  # Docker on Mac でコンテナ内部 IP (172.x.x.x) が広告されてしまうのを防ぐ。
+  # ブラウザは Mac の localhost 経由で Docker のポートマッピングを通る。
+  node_ip: 127.0.0.1
+
+keys:
+  devkey: livekit_local_devsecret_abc123xyz789
+
+webhook:
+  api_key: devkey
+  urls:
+    - http://host.docker.internal:3000/api/webhooks/livekit
+
+redis:
+  address: redis:6379

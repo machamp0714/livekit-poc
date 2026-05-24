@@ -50,7 +50,9 @@ export async function POST(request: Request) {
     },
   });
 
-  const httpUrl = serverUrl.replace(/^wss?:/, 'https:');
+  const httpUrl = serverUrl
+    .replace(/^wss:/, 'https:')
+    .replace(/^ws:/, 'http:');
   const client = new EgressClient(httpUrl, apiKey, apiSecret);
 
   try {

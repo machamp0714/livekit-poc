@@ -30,6 +30,59 @@ services:
       echo 'bucket ready';
       "
 
+  redis:
+    image: redis:7-alpine
+    container_name: livekit-poc-redis
+    ports:
+      - "6379:6379"  # host network の egress コンテナから参照させるため
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: livekit-poc-livekit
+    command: --config /etc/livekit.yaml --bind 0.0.0.0
+    volumes:
+      - ./livekit.yaml:/etc/livekit.yaml:ro
+    ports:
+      - "7880:7880"      # signaling (WebSocket)
+      - "7881:7881"      # WebRTC TCP fallback
+      - "7882:7882/udp"  # WebRTC UDP (ICE-Lite)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  egress:
+    image: livekit/egress:latest
+    container_name: livekit-poc-egress
+    # host network に載せて、Mac のブラウザと同じ「localhost 経由」の経路で livekit/minio に届かせる。
+    # これで node_ip: 127.0.0.1 が egress 側でも有効になる。
+    network_mode: host
+    environment:
+      EGRESS_CONFIG_BODY: |
+        api_key: devkey
+        api_secret: livekit_local_devsecret_abc123xyz789
+        ws_url: ws://localhost:7880
+        redis:
+          address: localhost:6379
+        log_level: info
+    cap_add:
+      - SYS_ADMIN
+    depends_on:
+      livekit:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   minio-data:
 
