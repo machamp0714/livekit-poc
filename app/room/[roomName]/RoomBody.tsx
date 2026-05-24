@@ -12,6 +12,7 @@ import { Track } from 'livekit-client';
 import { canBroadcast, type Role } from '@/lib/livekit/roles';
 import { QualityPanel } from './QualityPanel';
 import { RecordingControls } from './RecordingControls';
+import { ModeratorControls } from './ModeratorControls';
 
 export function RoomBody({ role, roomName }: { role: Role, roomName: string }) {
   const trackRefs = useTracks(
@@ -44,6 +45,12 @@ export function RoomBody({ role, roomName }: { role: Role, roomName: string }) {
       <QualityPanel />
 
       {role === 'moderator' && <RecordingControls roomName={roomName} />}
+      {role === 'moderator' && (
+        <>
+          <RecordingControls roomName={roomName} />
+          <ModeratorControls roomName={roomName} />
+        </>
+      )}
 
       {canBroadcast(role) ? (
         <ControlBar
