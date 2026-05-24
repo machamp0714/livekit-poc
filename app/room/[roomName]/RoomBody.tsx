@@ -44,7 +44,6 @@ export function RoomBody({ role, roomName }: { role: Role, roomName: string }) {
 
       <QualityPanel />
 
-      {role === 'moderator' && <RecordingControls roomName={roomName} />}
       {role === 'moderator' && (
         <>
           <RecordingControls roomName={roomName} />
