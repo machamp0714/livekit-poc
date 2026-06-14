@@ -68,7 +68,7 @@ async function safeStatsReport(
   if (
     track &&
     typeof (track as { getRTCStatsReport?: unknown }).getRTCStatsReport ===
-      'function'
+    'function'
   ) {
     try {
       return (await (track as RemoteTrack | LocalTrack).getRTCStatsReport()) ?? null;
@@ -98,7 +98,7 @@ export function DiagnosticsPanel() {
   const phaseRef = useRef<Phase>('idle');
   const targetTicksRef = useRef(0); // 0 = 自動停止しない
   const durationRef = useRef(10);
-  const finalizeRef = useRef<(p: Phase) => void>(() => {});
+  const finalizeRef = useRef<(p: Phase) => void>(() => { });
 
   const [remoteRows, setRemoteRows] = useState<RemoteRow[]>([]);
   const [localRows, setLocalRows] = useState<LocalRow[]>([]);
@@ -125,6 +125,9 @@ export function DiagnosticsPanel() {
       for (const kind of ['video', 'audio'] as const) {
         const refs = kind === 'video' ? cur.videoTracks : cur.audioTracks;
         for (const ref of refs) {
+          // 自分の publish トラックは「受信」ではないので除外する
+          // （useTracks は onlySubscribed でもローカル分を含むことがある）。
+          if (ref.participant.identity === cur.localParticipant?.identity) continue;
           const track = ref.publication?.track;
           const report = await safeStatsReport(track);
           if (!report) continue;
@@ -153,7 +156,11 @@ export function DiagnosticsPanel() {
           const kind = track?.kind as Kind | undefined;
           if (!track || (kind !== 'video' && kind !== 'audio')) continue;
           const report = await safeStatsReport(track);
+
           if (!report) continue;
+          for (const stat of report.values()) {
+            console.log('rtc stat', stat);
+          }
           if (!pubPair) pubPair = extractSelectedPair(report);
           const snap = extractOutboundRtp(report, kind);
           if (!snap) continue;
