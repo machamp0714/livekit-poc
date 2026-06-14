@@ -263,6 +263,10 @@ export function DiagnosticsPanel() {
         padding: 8,
         border: '1px solid #ccc',
         borderRadius: 4,
+        // ルームは LiveKit のダークテーマなので、診断パネルは自前で
+        // 明色背景＋濃色文字に固定して可読性を担保する。
+        background: '#fff',
+        color: '#111',
         display: 'flex',
         flexDirection: 'column',
         gap: 8,
@@ -346,6 +350,7 @@ export function DiagnosticsPanel() {
               maxHeight: 200,
               overflow: 'auto',
               background: '#f6f6f6',
+              color: '#111',
               padding: 8,
             }}
           >
