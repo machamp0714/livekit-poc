@@ -60,11 +60,21 @@ type Phase = 'idle' | 'baseline' | 'load';
 
 const POLL_MS = 500;
 
-function getStatsReport(
+// getRTCStatsReport は接続直後など未準備時に reject することがある。
+// 1トラックの失敗が collection の tick 全体を巻き込まないよう必ず握りつぶす。
+async function safeStatsReport(
   track: unknown,
-): Promise<RTCStatsReport | undefined> | null {
-  if (track && typeof (track as { getRTCStatsReport?: unknown }).getRTCStatsReport === 'function') {
-    return (track as RemoteTrack | LocalTrack).getRTCStatsReport();
+): Promise<RTCStatsReport | null> {
+  if (
+    track &&
+    typeof (track as { getRTCStatsReport?: unknown }).getRTCStatsReport ===
+      'function'
+  ) {
+    try {
+      return (await (track as RemoteTrack | LocalTrack).getRTCStatsReport()) ?? null;
+    } catch {
+      return null;
+    }
   }
   return null;
 }
@@ -116,9 +126,7 @@ export function DiagnosticsPanel() {
         const refs = kind === 'video' ? cur.videoTracks : cur.audioTracks;
         for (const ref of refs) {
           const track = ref.publication?.track;
-          const p = getStatsReport(track);
-          if (!p) continue;
-          const report = await p;
+          const report = await safeStatsReport(track);
           if (!report) continue;
           if (!subPair) subPair = extractSelectedPair(report);
           const snap = extractInboundRtp(report, kind);
@@ -144,9 +152,7 @@ export function DiagnosticsPanel() {
           const track = pub.track;
           const kind = track?.kind as Kind | undefined;
           if (!track || (kind !== 'video' && kind !== 'audio')) continue;
-          const p = getStatsReport(track);
-          if (!p) continue;
-          const report = await p;
+          const report = await safeStatsReport(track);
           if (!report) continue;
           if (!pubPair) pubPair = extractSelectedPair(report);
           const snap = extractOutboundRtp(report, kind);
