@@ -101,6 +101,34 @@ describe('classifyPath', () => {
     expect(v.kind).toBe('relay-tcp');
   });
 
+  it('candidateType=prflx でも relayProtocol=tls なら relay-tls（実測ケース）', () => {
+    // 制限網で TURN/TLS:443 に退避したが candidateType が prflx で報告される
+    // Chrome の実測パターン。relayProtocol を根拠に relay-tls と判定する。
+    const v = classifyPath(
+      pairWith({
+        candidateType: 'prflx',
+        protocol: 'udp',
+        relayProtocol: 'tls',
+        url: 'turns:otokyo1b.turn.livekit.cloud:443?transport=tcp',
+      }),
+    );
+    expect(v.kind).toBe('relay-tls');
+    expect(v.isRelay).toBe(true);
+    expect(v.isTurnTls).toBe(true);
+    expect(v.is443).toBe(true);
+  });
+
+  it('relayProtocol 無しでも turns: url があれば relay-tls と推定', () => {
+    const v = classifyPath(
+      pairWith({ candidateType: 'prflx', url: 'turns:x.livekit.cloud:443' }),
+    );
+    expect(v.kind).toBe('relay-tls');
+  });
+
+  it('relayProtocol も turns url も無い prflx は srflx のまま', () => {
+    expect(classifyPath(pairWith({ candidateType: 'prflx' })).kind).toBe('srflx');
+  });
+
   it('null は unknown', () => {
     expect(classifyPath(null).kind).toBe('unknown');
   });

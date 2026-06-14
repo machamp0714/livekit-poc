@@ -145,25 +145,43 @@ export function classifyPath(pair: SelectedPair | null): PathVerdict {
   const { local } = pair;
   const is443 = endsWith443(local);
   const type = local.candidateType;
+  const rp = local.relayProtocol;
+  const url = local.url ?? '';
 
-  if (type === 'relay') {
-    const rp = local.relayProtocol;
-    if (rp === 'tls') {
+  // relayProtocol は仕様上「TURN サーバ由来の候補」にしか付かない決定的な根拠。
+  // candidateType が relay でなくても（prflx/srflx に見えても）、relayProtocol か
+  // turns?: url があれば TURN 経由と判定する。
+  const looksRelay =
+    type === 'relay' || rp !== undefined || /^turns?:/i.test(url);
+
+  if (looksRelay) {
+    // relayProtocol を最優先。無ければ url スキームから推定（turns: は TLS 既定）。
+    const proto = rp ?? (/^turns:/i.test(url) ? 'tls' : url ? 'tcp' : undefined);
+    if (proto === 'tls') {
       return {
         kind: 'relay-tls',
         isRelay: true,
         isTurnTls: true,
         is443,
-        label: `TURN/TLS 経由（${local.url ?? 'turns:…:443'}）— 制限網の最終退避経路`,
+        label: `TURN/TLS 経由（${url || 'turns:…:443'}）— 制限網の最終退避経路`,
       };
     }
-    if (rp === 'tcp') {
+    if (proto === 'tcp') {
       return {
         kind: 'relay-tcp',
         isRelay: true,
         isTurnTls: false,
         is443,
-        label: `TURN/TCP 経由（${local.url ?? 'turn:…'}）`,
+        label: `TURN/TCP 経由（${url || 'turn:…'}）`,
+      };
+    }
+    if (proto === 'udp') {
+      return {
+        kind: 'relay-udp',
+        isRelay: true,
+        isTurnTls: false,
+        is443,
+        label: `TURN/UDP 経由（${url || 'turn:…'}）`,
       };
     }
     return {
@@ -171,7 +189,7 @@ export function classifyPath(pair: SelectedPair | null): PathVerdict {
       isRelay: true,
       isTurnTls: false,
       is443,
-      label: `TURN/UDP 経由（${local.url ?? 'turn:…'}）`,
+      label: `TURN 経由（プロトコル不明, ${url || '—'}）`,
     };
   }
   if (type === 'srflx' || type === 'prflx') {
