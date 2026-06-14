@@ -86,6 +86,9 @@ export function DiagnosticsPanel() {
   const baselineBuf = useRef<TickSample[]>([]);
   const loadBuf = useRef<TickSample[]>([]);
   const phaseRef = useRef<Phase>('idle');
+  const targetTicksRef = useRef(0); // 0 = 自動停止しない
+  const durationRef = useRef(10);
+  const finalizeRef = useRef<(p: Phase) => void>(() => {});
 
   const [remoteRows, setRemoteRows] = useState<RemoteRow[]>([]);
   const [localRows, setLocalRows] = useState<LocalRow[]>([]);
@@ -93,6 +96,9 @@ export function DiagnosticsPanel() {
   const [pubPath, setPubPath] = useState<PathView | null>(null);
   const [quality, setQuality] = useState<QualityRow[]>([]);
   const [phase, setPhase] = useState<Phase>('idle');
+  const [durationSec, setDurationSec] = useState(10);
+  const [elapsedTicks, setElapsedTicks] = useState(0);
+  durationRef.current = durationSec;
   const [baseline, setBaseline] = useState<MetricSummary | null>(null);
   const [load, setLoad] = useState<MetricSummary | null>(null);
   const [comparison, setComparison] = useState<PhaseComparison | null>(null);
@@ -183,7 +189,14 @@ export function DiagnosticsPanel() {
             : 0,
           totalFramesDropped: vids.reduce((a, r) => a + r.delta.framesDropped, 0),
         };
-        (ph === 'baseline' ? baselineBuf : loadBuf).current.push(sample);
+        const buf = ph === 'baseline' ? baselineBuf : loadBuf;
+        buf.current.push(sample);
+        const collected = buf.current.length;
+        setElapsedTicks(collected);
+        // 一定秒数に達したら自動停止（Issue: 「一定秒数集計」）。
+        if (targetTicksRef.current > 0 && collected >= targetTicksRef.current) {
+          finalizeRef.current(ph);
+        }
       }
     }, POLL_MS);
     return () => {
@@ -195,17 +208,28 @@ export function DiagnosticsPanel() {
   const startPhase = useCallback((p: Phase) => {
     if (p === 'baseline') baselineBuf.current = [];
     if (p === 'load') loadBuf.current = [];
+    targetTicksRef.current = Math.max(
+      1,
+      Math.round((durationRef.current * 1000) / POLL_MS),
+    );
+    setElapsedTicks(0);
     phaseRef.current = p;
     setPhase(p);
   }, []);
 
   const stopPhase = useCallback(() => {
-    const p = phaseRef.current;
+    finalizeRef.current(phaseRef.current);
+  }, []);
+
+  // 集計の確定（手動「停止」・自動停止 共通）。毎レンダで最新の setter を束ねる。
+  finalizeRef.current = (p: Phase) => {
     phaseRef.current = 'idle';
+    targetTicksRef.current = 0;
     setPhase('idle');
+    setElapsedTicks(0);
     if (p === 'baseline') setBaseline(summarize(baselineBuf.current));
     if (p === 'load') setLoad(summarize(loadBuf.current));
-  }, []);
+  };
 
   const compute = useCallback(() => {
     if (baseline && load) setComparison(comparePhases(baseline, load));
@@ -288,9 +312,26 @@ export function DiagnosticsPanel() {
           </button>
           <button onClick={exportJson}>JSON 出力（クリップボードへ）</button>
         </div>
+        <label style={{ display: 'block', margin: '4px 0' }}>
+          集計秒数:{' '}
+          <input
+            type="number"
+            min={1}
+            max={120}
+            value={durationSec}
+            disabled={phase !== 'idle'}
+            onChange={(e) => setDurationSec(Math.max(1, Number(e.target.value) || 1))}
+            style={{ width: 56 }}
+          />{' '}
+          秒（{POLL_MS}ms ポーリング → 経過で自動停止）
+        </label>
         <p style={{ margin: '4px 0' }}>
           状態: <strong>{phase}</strong>
-          {phase !== 'idle' && '（0.5秒ポーリングで収集中）'}
+          {phase !== 'idle' &&
+            `（収集中 ${elapsedTicks}/${targetTicksRef.current} tick・残り ${Math.max(
+              0,
+              Math.ceil(((targetTicksRef.current - elapsedTicks) * POLL_MS) / 1000),
+            )}秒）`}
         </p>
         <SummaryBlock title="Baseline" s={baseline} />
         <SummaryBlock title="Load" s={load} />
