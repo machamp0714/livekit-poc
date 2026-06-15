@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="440" viewBox="0 0 980 440" font-family="'Helvetica Neue',Arial,'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif">
+  <defs>
+    <marker id="w" markerWidth="11" markerHeight="11" refX="8" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,4 L0,8 Z" fill="#5a5a5a"/></marker>
+  </defs>
+  <rect width="980" height="440" fill="#ffffff"/>
+  <text x="32" y="38" font-size="20" font-weight="700" fill="#1f2937">なぜ LiveKit 単体ではチャットを賄えないのか</text>
+  <text x="32" y="60" font-size="12" fill="#6b7280">リアルタイム配信は LiveKit のデータチャネルで既に可能。問題は「揮発的な配信しかできない」こと。</text>
+
+  <!-- LEFT panel: LiveKit alone -->
+  <rect x="24" y="78" width="450" height="338" rx="12" fill="#FDF1F1" stroke="#B85450" stroke-width="1.6"/>
+  <text x="44" y="106" font-size="14" font-weight="700" fill="#b85450">✗ LiveKit データチャネル単体</text>
+
+  <rect x="44" y="120" width="104" height="50" rx="9" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="1.5"/>
+  <text x="96" y="150" text-anchor="middle" font-size="12" fill="#1f2937">ブラウザA</text>
+  <rect x="186" y="120" width="120" height="50" rx="9" fill="#F5F5F5" stroke="#999999" stroke-width="1.5"/>
+  <text x="246" y="143" text-anchor="middle" font-size="11.5" fill="#374151">LiveKit data</text>
+  <text x="246" y="159" text-anchor="middle" font-size="9.5" fill="#6b7280">（揮発・配信のみ）</text>
+  <rect x="344" y="120" width="104" height="50" rx="9" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="1.5"/>
+  <text x="396" y="150" text-anchor="middle" font-size="12" fill="#1f2937">ブラウザB</text>
+  <line x1="148" y1="145" x2="182" y2="145" stroke="#5a5a5a" stroke-width="1.6" marker-end="url(#w)"/>
+  <line x1="306" y1="145" x2="340" y2="145" stroke="#5a5a5a" stroke-width="1.6" marker-end="url(#w)"/>
+
+  <text x="44" y="214" font-size="12.5" fill="#b85450">✗ 永続化なし（履歴・CSV エクスポート不可）</text>
+  <text x="44" y="248" font-size="12.5" fill="#b85450">✗ 後入室・リロードで過去メッセージが届かない</text>
+  <text x="44" y="282" font-size="12.5" fill="#b85450">✗ チャネル別の送信権限をサーバー強制できない</text>
+  <text x="60" y="300" font-size="10.5" fill="#9b6b69">（canPublishData は all-or-nothing・宛先は詐称可）</text>
+  <text x="44" y="334" font-size="12.5" fill="#b85450">✗ AV(LiveKit) に再結合（差し替え時に巻き込まれる）</text>
+  <text x="60" y="352" font-size="10.5" fill="#9b6b69">（生存期間も「ルーム接続中」に縛られる）</text>
+
+  <!-- RIGHT panel: separate realtime layer -->
+  <rect x="506" y="78" width="450" height="338" rx="12" fill="#F1F8F0" stroke="#82B366" stroke-width="1.6"/>
+  <text x="526" y="106" font-size="14" font-weight="700" fill="#2f855a">✓ 別のリアルタイム層 ＋ DB（本書の構成）</text>
+
+  <rect x="526" y="120" width="100" height="50" rx="9" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="1.5"/>
+  <text x="576" y="150" text-anchor="middle" font-size="12" fill="#1f2937">ブラウザ</text>
+  <rect x="656" y="120" width="120" height="50" rx="9" fill="#FFE6CC" stroke="#D79B00" stroke-width="1.5"/>
+  <text x="716" y="143" text-anchor="middle" font-size="11.5" fill="#1f2937">リアルタイム層</text>
+  <text x="716" y="159" text-anchor="middle" font-size="9.5" fill="#6b5b3e">認可・配信</text>
+  <rect x="806" y="120" width="124" height="50" rx="9" fill="#D5E8D4" stroke="#82B366" stroke-width="1.5"/>
+  <text x="868" y="143" text-anchor="middle" font-size="11.5" fill="#1f2937">DB（RDS）</text>
+  <text x="868" y="159" text-anchor="middle" font-size="9.5" fill="#3f6f43">永続化</text>
+  <line x1="626" y1="145" x2="652" y2="145" stroke="#5a5a5a" stroke-width="1.6" marker-end="url(#w)"/>
+  <line x1="776" y1="145" x2="802" y2="145" stroke="#5a5a5a" stroke-width="1.6" marker-end="url(#w)"/>
+  <rect x="526" y="186" width="150" height="42" rx="9" fill="#F5F5F5" stroke="#999999" stroke-width="1.4"/>
+  <text x="601" y="212" text-anchor="middle" font-size="11" fill="#374151">LiveKit（AV のみ・分離）</text>
+  <line x1="576" y1="170" x2="576" y2="184" stroke="#999999" stroke-width="1.4" marker-end="url(#w)"/>
+
+  <text x="526" y="266" font-size="12.5" fill="#2f855a">✓ 永続化：履歴・CSV エクスポート</text>
+  <text x="526" y="300" font-size="12.5" fill="#2f855a">✓ 後入室・リロードも履歴 API で復元</text>
+  <text x="526" y="334" font-size="12.5" fill="#2f855a">✓ ロール別チャネル権限をサーバー強制</text>
+  <text x="526" y="368" font-size="12.5" fill="#2f855a">✓ AV 非依存（LiveKit 差し替えに強い）</text>
+</svg>
