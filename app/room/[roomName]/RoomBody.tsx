@@ -10,7 +10,7 @@ import {
 } from '@livekit/components-react';
 import { Track } from 'livekit-client';
 import { canBroadcast, type Role } from '@/lib/livekit/roles';
-import { QualityPanel } from './QualityPanel';
+import { DiagnosticsPanel } from './DiagnosticsPanel';
 import { RecordingControls } from './RecordingControls';
 import { ModeratorControls } from './ModeratorControls';
 
@@ -42,7 +42,7 @@ export function RoomBody({ role, roomName }: { role: Role, roomName: string }) {
         <ParticipantTile />
       </GridLayout>
 
-      <QualityPanel />
+      <DiagnosticsPanel />
 
       {role === 'moderator' && (
         <>

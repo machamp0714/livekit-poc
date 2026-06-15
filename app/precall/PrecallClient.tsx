@@ -91,6 +91,9 @@ export function PrecallClient({ name, roomName, role }: Props) {
       <button onClick={start} disabled={running}>
         {running ? 'テスト中…' : 'テストを開始'}
       </button>
+      <button onClick={proceed} disabled={running} style={{ marginLeft: 8 }}>
+        テストをスキップして入室
+      </button>
       {error && <p style={{ color: 'red' }}>エラー: {error}</p>}
 
       <ul style={{ marginTop: 16, listStyle: 'none', paddingLeft: 0 }}>
@@ -114,9 +117,13 @@ export function PrecallClient({ name, roomName, role }: Props) {
         </button>
       )}
       {passed === false && (
-        <p style={{ color: 'red' }}>
-          接続テストに失敗しました。ネットワーク・ブラウザ権限を確認してください。
-        </p>
+        <div style={{ marginTop: 12 }}>
+          <p style={{ color: 'red' }}>
+            接続テストに一部失敗しました。UDP 遮断時は「Connection Protocol」が失敗しますが、
+            TURN/TLS:443 経由で通話自体は可能です。
+          </p>
+          <button onClick={proceed}>このまま入室する</button>
+        </div>
       )}
     </section>
   );
