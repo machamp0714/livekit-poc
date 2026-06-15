@@ -7,7 +7,8 @@
 | 検証日 | 2026-06-15 |
 | 検証バージョン | `livekit-client@2.19.0` / `@livekit/components-react@2.9.21` / `livekit-server-sdk@2.15.3` |
 | ステータス | PoC（意思決定のための検証。本番品質は対象外） |
-| 結論（先出し） | **チャットは ActionCable + DB のまま継続を推奨。** LiveKit Text streams は「全体チャットの送受信」は容易に実現できるが、現行実査チャットの中核要件（永続化・履歴・CSV・ロール別チャネル権限のサーバー強制）を満たすには結局 DB と権限検証層の自前実装が必要で、LiveKit ネイティブに寄せる利点が小さい。 |
+| 前提 | 実査機能は独立 Next.js アプリへ外だしし **Rails を使わない**（→ ActionCable は選択肢から外れる）。 |
+| 結論（先出し） | **チャットは AV ベンダー(LiveKit)から分離し、チャット専用バックエンド（Supabase 等の BaaS = Postgres + Realtime + RLS + Storage）に集約することを推奨。** LiveKit Text streams は「全体チャットの送受信」は容易だが、実査チャットの中核要件（永続化・履歴・CSV・ロール別チャネル権限のサーバー強制）は LiveKit ネイティブに欠落しており、結局 DB と認可層が必要。現行が ActionCable で実現していた「チャット＝AV非依存」を Rails 無しで継承するのが BaaS 集約。詳細は §4。 |
 
 ---
 
@@ -104,29 +105,88 @@ function useChat(options?: ChatOptions & { room?: Room }): {
 
 ---
 
-## 4. ActionCable 継続 vs LiveKit ネイティブ 比較
+## 4. 独立 Next.js 実査アプリでのチャット構成
 
-| 観点 | ActionCable + DB（現行継続） | LiveKit ネイティブ（Text/Data streams） |
+### 4-0. 前提の訂正
+
+当初は「チャットは ActionCable + DB のまま継続」を推奨していたが、これは **Rails が残る前提**だった。
+実査機能は独立 Next.js アプリへ外だしし **Rails を使わない**方針のため、ActionCable は選べない。
+よって本節を「独立アプリでの構成」として書き直す。
+
+ただし重要なのは **ActionCable は手段であって要件ではない**こと。現行チャットが本当に必要とする
+*能力*は次の 4 つで、いずれも Rails 固有ではない。独立アプリでは「ActionCable を別物で置換」
+ではなく、**この①〜④を満たすサーバー権威型のチャット層を新スタックで組む**のが本質。
+
+| 能力 | 旧: ActionCable + DB | LiveKit ネイティブの欠落（本 PoC 所見） |
 |---|---|---|
-| 全体チャット送受信 | ◎ 実績あり | ◎ 容易 |
-| 永続化・履歴・CSV | ◎ DB で標準対応済み | ✕ 自前 DB が必須（LiveKit は非保持） |
-| ロール別チャネル権限のサーバー強制 | ◎ `subscribed` 認可で標準 | △ 検証層（API 問い合わせ or Agent 中継）が必要 |
-| 後入室・リロード時の履歴 | ◎ API で取得 | ✕ ストリームは過去分を配信しない |
-| WebRTC 基盤差し替えの影響 | ◎ 影響を受けない（OpenTok→LiveKit でもチャットは無改修） | △ 移行と密結合になる |
-| Slack 連携・配信ジョブ | ◎ 既存ジョブ流用 | △ 別途実装 |
-| 実装コスト（移行時） | ◎ ほぼゼロ（現状維持） | ✕ DB + 権限層 + 履歴 API を作り直し |
-| メリット | シグナリングを基盤非依存に保てる | シグナリング層を SDK に寄せられる（依存が 1 つ減る） |
+| ① リアルタイム配信 | ActionCable | ✅ LiveKit でも可 |
+| ② 永続化・履歴・CSV | DB | ❌ 非対応（§2） |
+| ③ ロール別チャネル送信権限の**サーバー強制** | `subscribed` 認可 | ❌ `canPublishData` は all-or-nothing（§1-2） |
+| ④ 添付の保存 | DB + ストレージ | △ Byte streams で転送のみ |
 
-### 推奨
+### 4-1. 設計の分岐点
 
-**チャットは現行の ActionCable + DB を継続する。**
+構成を分ける本質的な問いは **「チャットを AV ベンダー(LiveKit)から独立に保つか、LiveKit に集約するか」**。
+現行が OpenTok signal を使わず ActionCable にしたのは、まさにチャットを AV ベンダーから切り離すため。
+この設計思想を継ぐかどうかで構成が決まる。
+
+### 4-2. 構成案
+
+**案B（採用）: チャット専用バックエンドで AV から分離 — BaaS 集約**
+
+```
+[Next.js 実査アプリ] ──AV──> LiveKit（映像 / 音声のみ）
+        │
+        └──chat──> BaaS（Supabase 等）
+                    ├ Postgres      … 永続化・履歴・CSV（②）
+                    ├ Realtime(WS)  … リアルタイム配信（①）
+                    ├ RLS           … ロール別チャネル認可を DB で強制（③）
+                    └ Storage       … 添付（④）
+```
+
+- 現行アーキテクチャの美点（**チャット＝AV 非依存**）をそのまま維持。将来 LiveKit を差し替えてもチャット無改修。
+- ActionCable + DB が持っていた①〜④を Rails 無しでほぼ等価に再現。サーバーレス / App Router と相性良。
+- 本 PoC の `SEND_MATRIX` / `RECEIVE_MATRIX`（`lib/livekit/chat.ts`）を **RLS ポリシーへ移植**して③を担保。
+- Supabase は一例。Convex / Firestore / 「Ably・Pusher + managed Postgres」等でも同型。
+- 欠点: 新ベンダー依存、RLS（行レベルセキュリティ）の設計コスト。
+
+**案A（次点）: LiveKit に集約 — Next.js Route Handler 権威 + `sendData`**
+
+```
+[Client] ──POST /api/chat──> [Next.js Route Handler]
+                              ├ JWT で identity/role 検証 → canSendTo() でサーバー判定（③）
+                              ├ DB（Neon / RDS 等）へ永続化（②）
+                              └ RoomServiceClient.sendData() で対象 identity に配信（①）
+[Client] <──RoomEvent.DataReceived── LiveKit
+履歴: GET /api/chat（DB から）／ 添付: presigned URL → S3 / R2（④）
+```
+
+- realtime 用インフラを増やさず **LiveKit 接続を再利用**。PoC の `chat.ts` ロジックを**サーバー側で流用**できる。
+- 宛先をサーバーが決定するため、PoC で残課題だった「クライアントによる `destinationIdentities` 詐称」（§1-2）が解消。
+- 欠点: **チャットが LiveKit に再結合**（AV 差し替え時に影響）。DB は結局必要で、永続化の自前実装からは逃げられない。LiveKit data は ephemeral と割り切り「DB が真実、配信は通知」とする。
+
+**案C（非推奨）: フル自前 WebSocket / SSE + Postgres**
+
+- ベンダー中立だが、サーバーレス環境で常時接続 WS の接続管理・スケールを自作するのは負荷が高い。
+
+### 4-3. 比較と推奨
+
+| 観点 | 案B（BaaS 分離） | 案A（LiveKit 集約） | 案C（自前 WS） |
+|---|---|---|---|
+| AV からの独立性 | ◎ | ✕ 再結合 | ◎ |
+| ①〜④の充足 | ◎ ほぼ標準機能 | ○ 要実装だが可 | △ 全部自前 |
+| 新規インフラ | BaaS 1 つ | DB 1 つ | DB + WS 基盤 |
+| PoC コード再利用 | ロジックを RLS へ移植 | `chat.ts` をサーバーで流用 | 流用可 |
+| 運用負荷 | 低 | 中 | 高 |
+
+**推奨は案B（BaaS でチャットを AV から分離）。**
 
 理由:
-1. 現行チャットの中核価値は **永続化・履歴・CSV・ロール別権限のサーバー強制**にある。これらは LiveKit ネイティブでは結局 DB と検証層の自前実装になり、「SDK に寄せる」利点（依存削減）を上回る再実装コストが発生する。
-2. チャットは元々 OpenTok signal ではなく ActionCable で実装されており、**WebRTC 基盤（OpenTok→LiveKit）の差し替えと独立**している。基盤移行のスコープからチャットを外せること自体が低リスク化に寄与する。
-3. LiveKit Text streams は「揮発的なリアルタイム通知」（例: 入力中表示、録画状態の即時通知、軽量な運営アナウンス）には適する。**全面置換ではなく、補助用途での部分採用**なら検討余地あり。
+1. 現行が ActionCable を採用した本来の狙い（チャットを AV ベンダーから独立させる）を、Rails 無しで最も素直に継承できる。
+2. ②永続化・履歴・CSV、③ロール別認可、④添付が、新スタックの**標準機能**として手に入る（自前実装が最小）。
+3. LiveKit を将来差し替えても、また AV と無関係な拡張（Slack 連携・archive_status 通知など）を足しても、チャット側が影響を受けない。
 
-> `minedia/minedia-www#5317` へのインプット: 「チャットは ActionCable 継続」を前提に基盤移行のスコープを切ると、移行リスクと工数を圧縮できる。LiveKit データチャネルは将来の補助機能（録画状態のクライアント通知等）として残す。
+> `minedia/minedia-www#5317` へのインプット: 独立アプリのチャットは **「LiveKit に乗せず、Postgres ベースの BaaS（Supabase 等）に集約」**を前提にスコープを切る。LiveKit データチャネルは「揮発的なリアルタイム通知」（入力中表示・録画状態の即時通知等）の補助用途に限定し、永続が要るチャット本体は BaaS 側に置く。運用都合でインフラを増やしたくない場合の次点が案A（Route Handler 権威 + `sendData`）。
 
 ---
 
@@ -155,7 +215,7 @@ function useChat(options?: ChatOptions & { room?: Room }): {
 - [ ] AC#2: public 動作 + private 宛先限定の可否判定（手順 4, 5）
 - [x] AC#3: 3 階層チャネル + ロール権限の実現可否・制約（本書 §1）
 - [x] AC#4: 永続化・履歴・CSV・添付・スタンプ・録画状態通知の扱い（本書 §2）
-- [x] AC#5: ActionCable 継続 / LiveKit ネイティブ比較・推奨（本書 §4）
+- [x] AC#5: 独立アプリでのチャット構成（BaaS 分離 vs LiveKit 集約）の比較・推奨（本書 §4）
 - [x] AC#6: 最小テスト `chat.test.ts` が `pnpm test` で通る
 
 ---
