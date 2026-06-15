@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1060" height="670" viewBox="0 0 1060 670" font-family="'Helvetica Neue',Arial,'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif">
+  <defs>
+    <marker id="m" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4 L0,8 Z" fill="#5a5a5a"/></marker>
+    <marker id="ms" markerWidth="12" markerHeight="12" refX="0" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M9,0 L0,4 L9,8 Z" fill="#5a5a5a"/></marker>
+    <marker id="mr" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4 L0,8 Z" fill="#B85450"/></marker>
+    <marker id="mrs" markerWidth="12" markerHeight="12" refX="0" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M9,0 L0,4 L9,8 Z" fill="#B85450"/></marker>
+  </defs>
+  <rect width="1060" height="670" fill="#ffffff"/>
+  <text x="32" y="38" font-size="20" font-weight="700" fill="#1f2937">案E 詳細：ECS サービス構成（Next.js / Socket.IO 分離・マルチAZ）</text>
+  <text x="32" y="60" font-size="12" fill="#6b7280">AZ ごとに最低2台＝複数 subnet ＋ desired count ≥ 4 ＋ AZ rebalancing（Fargate は placement strategy 不可）。</text>
+
+  <!-- Browser -->
+  <rect x="36" y="292" width="172" height="82" rx="10" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="1.8"/>
+  <text x="122" y="328" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2937">ブラウザ</text>
+  <text x="122" y="347" text-anchor="middle" font-size="11" fill="#6b7280">role 付き JWT</text>
+
+  <!-- LiveKit -->
+  <rect x="36" y="426" width="172" height="64" rx="10" fill="#F5F5F5" stroke="#999999" stroke-width="1.6"/>
+  <text x="122" y="455" text-anchor="middle" font-size="12.5" fill="#374151">LiveKit</text>
+  <text x="122" y="472" text-anchor="middle" font-size="10.5" fill="#6b7280">映像・音声</text>
+
+  <!-- ALB -->
+  <rect x="262" y="287" width="188" height="92" rx="10" fill="#FFE6CC" stroke="#D79B00" stroke-width="1.8"/>
+  <text x="356" y="320" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2937">ALB</text>
+  <text x="356" y="338" text-anchor="middle" font-size="10.5" fill="#6b5b3e">WebSocket 有効</text>
+  <text x="356" y="354" text-anchor="middle" font-size="10.5" fill="#6b5b3e">idle timeout 調整</text>
+
+  <!-- next-web service -->
+  <rect x="520" y="104" width="504" height="172" rx="12" fill="#EEF3FA" stroke="#6C8EBF" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="540" y="130" font-size="13.5" font-weight="700" fill="#3b5a86">Service: next-web（Fargate）— ×(2AZ×2)</text>
+  <rect x="544" y="146" width="222" height="112" rx="9" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="1.6"/>
+  <text x="655" y="190" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1f2937">AZ-a</text>
+  <text x="655" y="210" text-anchor="middle" font-size="11.5" fill="#374151">next-web task ×2</text>
+  <text x="655" y="228" text-anchor="middle" font-size="10.5" fill="#6b7280">SSR / Route Handler</text>
+  <rect x="780" y="146" width="222" height="112" rx="9" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="1.6"/>
+  <text x="891" y="190" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1f2937">AZ-c</text>
+  <text x="891" y="210" text-anchor="middle" font-size="11.5" fill="#374151">next-web task ×2</text>
+  <text x="891" y="228" text-anchor="middle" font-size="10.5" fill="#6b7280">SSR / Route Handler</text>
+
+  <!-- chat-socketio service -->
+  <rect x="520" y="312" width="504" height="186" rx="12" fill="#FBF1E4" stroke="#D79B00" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="540" y="338" font-size="13.5" font-weight="700" fill="#9a7b3e">Service: chat-socketio（Fargate・sticky）— ×(2AZ×2)</text>
+  <rect x="544" y="354" width="222" height="122" rx="9" fill="#FFE6CC" stroke="#D79B00" stroke-width="1.6"/>
+  <text x="655" y="396" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1f2937">AZ-a</text>
+  <text x="655" y="416" text-anchor="middle" font-size="11.5" fill="#1f2937">Socket.IO task ×2</text>
+  <text x="655" y="434" text-anchor="middle" font-size="10.5" fill="#6b5b3e">認可(canSendTo)・rooms</text>
+  <rect x="780" y="354" width="222" height="122" rx="9" fill="#FFE6CC" stroke="#D79B00" stroke-width="1.6"/>
+  <text x="891" y="396" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1f2937">AZ-c</text>
+  <text x="891" y="416" text-anchor="middle" font-size="11.5" fill="#1f2937">Socket.IO task ×2</text>
+  <text x="891" y="434" text-anchor="middle" font-size="10.5" fill="#6b5b3e">認可(canSendTo)・rooms</text>
+
+  <!-- external managed -->
+  <rect x="300" y="556" width="248" height="78" rx="10" fill="#F8CECC" stroke="#B85450" stroke-width="1.8"/>
+  <text x="424" y="586" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1f2937">ElastiCache Redis（Multi-AZ）</text>
+  <text x="424" y="606" text-anchor="middle" font-size="10.5" fill="#7a3b38">アダプタ：タスク間 fanout</text>
+  <text x="424" y="622" text-anchor="middle" font-size="10" fill="#7a3b38">※ sticky とは別問題</text>
+
+  <rect x="610" y="556" width="248" height="78" rx="10" fill="#D5E8D4" stroke="#82B366" stroke-width="1.8"/>
+  <text x="734" y="586" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1f2937">RDS Postgres（Multi-AZ）</text>
+  <text x="734" y="606" text-anchor="middle" font-size="10.5" fill="#3f6f43">永続化・履歴・CSV</text>
+  <text x="734" y="622" text-anchor="middle" font-size="10" fill="#3f6f43">常駐プールで RDS Proxy 不要</text>
+
+  <!-- edges -->
+  <line x1="208" y1="320" x2="258" y2="320" stroke="#5a5a5a" stroke-width="1.9" marker-end="url(#m)"/>
+  <rect x="200" y="300" width="74" height="17" rx="3" fill="#ffffff"/>
+  <text x="237" y="313" text-anchor="middle" font-size="10" fill="#6b7280">HTTPS / WSS</text>
+  <line x1="122" y1="374" x2="122" y2="424" stroke="#999999" stroke-width="1.6" marker-end="url(#m)"/>
+  <text x="142" y="404" font-size="10" fill="#6b7280">AV</text>
+
+  <line x1="450" y1="312" x2="516" y2="200" stroke="#5a5a5a" stroke-width="1.8" marker-end="url(#m)"/>
+  <rect x="452" y="240" width="40" height="18" rx="3" fill="#ffffff"/>
+  <text x="472" y="253" text-anchor="middle" font-size="11.5" font-weight="600" fill="#3b5a86">/*</text>
+  <line x1="450" y1="352" x2="516" y2="404" stroke="#5a5a5a" stroke-width="1.8" marker-end="url(#m)"/>
+  <rect x="430" y="360" width="150" height="18" rx="3" fill="#ffffff"/>
+  <text x="505" y="373" text-anchor="middle" font-size="10.5" font-weight="600" fill="#9a7b3e">/socket.io/* (sticky)</text>
+
+  <!-- socketio <-> redis -->
+  <line x1="640" y1="498" x2="445" y2="554" stroke="#B85450" stroke-width="1.8" marker-end="url(#mr)" marker-start="url(#mrs)"/>
+  <rect x="470" y="512" width="120" height="18" rx="3" fill="#ffffff"/>
+  <text x="530" y="525" text-anchor="middle" font-size="10.5" fill="#7a3b38">pub/sub adapter</text>
+  <!-- socketio -> rds -->
+  <line x1="820" y1="498" x2="760" y2="554" stroke="#82B366" stroke-width="1.8" marker-end="url(#m)"/>
+  <rect x="760" y="516" width="120" height="18" rx="3" fill="#ffffff"/>
+  <text x="820" y="529" text-anchor="middle" font-size="10.5" fill="#3f6f43">INSERT / SELECT</text>
+  <!-- next-web -> rds (right routing) -->
+  <path d="M 1024,180 L 1044,180 L 1044,595 L 860,595" fill="none" stroke="#82B366" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#m)"/>
+  <rect x="846" y="150" width="196" height="18" rx="3" fill="#ffffff"/>
+  <text x="944" y="163" text-anchor="middle" font-size="10.5" fill="#3f6f43">Next.js → RDS（履歴API / SSR 読取）</text>
+
+  <text x="32" y="656" font-size="11" fill="#6b7280">送信経路：(a) Socket.IO に集約（認可＋RDS保存＋配信）＝低レイテンシで推奨／(b) Next.js Route Handler 経由。添付は S3(presigned, 本図では省略)。`chat.ts` の認可は共有パッケージ化。</text>
+</svg>
