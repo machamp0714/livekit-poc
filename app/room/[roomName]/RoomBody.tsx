@@ -13,6 +13,7 @@ import { canBroadcast, type Role } from '@/lib/livekit/roles';
 import { DiagnosticsPanel } from './DiagnosticsPanel';
 import { RecordingControls } from './RecordingControls';
 import { ModeratorControls } from './ModeratorControls';
+import { ChatPanel } from './ChatPanel';
 
 export function RoomBody({ role, roomName }: { role: Role, roomName: string }) {
   const trackRefs = useTracks(
@@ -43,6 +44,8 @@ export function RoomBody({ role, roomName }: { role: Role, roomName: string }) {
       </GridLayout>
 
       <DiagnosticsPanel />
+
+      <ChatPanel role={role} />
 
       {role === 'moderator' && (
         <>

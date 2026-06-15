@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="540" viewBox="0 0 980 540" font-family="'Helvetica Neue',Arial,'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif">
+  <defs>
+    <marker id="pa" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4 L0,8 Z" fill="#5a5a5a"/></marker>
+    <marker id="pas" markerWidth="12" markerHeight="12" refX="0" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M9,0 L0,4 L9,8 Z" fill="#5a5a5a"/></marker>
+    <marker id="pag" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4 L0,8 Z" fill="#82B366"/></marker>
+    <marker id="pags" markerWidth="12" markerHeight="12" refX="0" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M9,0 L0,4 L9,8 Z" fill="#82B366"/></marker>
+  </defs>
+  <rect width="980" height="540" fill="#ffffff"/>
+  <text x="32" y="38" font-size="20" font-weight="700" fill="#1f2937">参考・案A：LiveKit データチャネル再利用（サーバー権威）</text>
+  <text x="32" y="60" font-size="12" fill="#6b7280">送信は HTTP（Route Handler）、配信は LiveKit。追加インフラ無しだが、チャットが AV(LiveKit)に再結合する。</text>
+
+  <!-- Browser -->
+  <rect x="36" y="228" width="190" height="116" rx="10" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="1.8"/>
+  <text x="131" y="278" text-anchor="middle" font-size="14" font-weight="600" fill="#1f2937">ブラウザ</text>
+  <text x="131" y="298" text-anchor="middle" font-size="11" fill="#374151">role 付き JWT</text>
+  <text x="131" y="317" text-anchor="middle" font-size="10.5" fill="#6b7280">送信=HTTP / 受信=DataReceived</text>
+
+  <!-- Route Handler -->
+  <rect x="330" y="96" width="262" height="120" rx="10" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.8"/>
+  <text x="461" y="130" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2937">Next.js Route Handler</text>
+  <text x="461" y="152" text-anchor="middle" font-size="11" fill="#6b7280">POST /api/chat（認可＋保存＋配信）</text>
+  <text x="461" y="170" text-anchor="middle" font-size="11" fill="#6b7280">GET /api/chat/history（履歴）</text>
+  <text x="461" y="194" text-anchor="middle" font-size="10" fill="#9a7b3e">宛先は listParticipants(role) で算出＝詐称不可</text>
+
+  <!-- RDS -->
+  <rect x="700" y="106" width="170" height="92" rx="10" fill="#D5E8D4" stroke="#82B366" stroke-width="1.8"/>
+  <text x="785" y="142" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1f2937">RDS Postgres</text>
+  <text x="785" y="161" text-anchor="middle" font-size="10.5" fill="#3f6f43">永続化・履歴・CSV</text>
+
+  <!-- LiveKit (dual role) -->
+  <rect x="330" y="320" width="262" height="118" rx="10" fill="#F5F5F5" stroke="#999999" stroke-width="2"/>
+  <text x="461" y="356" text-anchor="middle" font-size="13.5" font-weight="600" fill="#374151">LiveKit</text>
+  <text x="461" y="378" text-anchor="middle" font-size="11" fill="#555">① 映像・音声（AV）</text>
+  <text x="461" y="397" text-anchor="middle" font-size="11" fill="#555">② チャット data 配信（sendData / DataReceived）</text>
+  <text x="461" y="420" text-anchor="middle" font-size="10.5" font-weight="600" fill="#b85450">⚠ チャットが AV に再結合</text>
+
+  <!-- edges -->
+  <!-- 1 browser -> route handler -->
+  <line x1="226" y1="268" x2="330" y2="172" stroke="#5a5a5a" stroke-width="1.8" marker-end="url(#pa)"/>
+  <rect x="218" y="206" width="150" height="18" rx="3" fill="#ffffff"/>
+  <text x="293" y="219" text-anchor="middle" font-size="10.5" fill="#374151">① POST 送信 / GET 履歴</text>
+  <!-- 2 route handler <-> rds -->
+  <line x1="592" y1="150" x2="696" y2="150" stroke="#82B366" stroke-width="1.8" marker-end="url(#pag)" marker-start="url(#pags)"/>
+  <rect x="594" y="124" width="104" height="18" rx="3" fill="#ffffff"/>
+  <text x="646" y="137" text-anchor="middle" font-size="10" fill="#3f6f43">② INSERT/SELECT</text>
+  <!-- 3 route handler -> livekit -->
+  <line x1="461" y1="216" x2="461" y2="316" stroke="#5a5a5a" stroke-width="1.9" marker-end="url(#pa)"/>
+  <rect x="466" y="256" width="170" height="18" rx="3" fill="#ffffff"/>
+  <text x="551" y="269" text-anchor="middle" font-size="10.5" fill="#374151">③ sendData（宛先＋topic）</text>
+  <!-- 4 livekit -> browser (receive) -->
+  <line x1="330" y1="352" x2="228" y2="312" stroke="#5a5a5a" stroke-width="1.8" marker-end="url(#pa)"/>
+  <rect x="208" y="356" width="160" height="18" rx="3" fill="#ffffff"/>
+  <text x="288" y="369" text-anchor="middle" font-size="10.5" fill="#374151">④ DataReceived（受信）</text>
+  <!-- 5 browser <-> livekit AV -->
+  <line x1="160" y1="344" x2="346" y2="416" stroke="#999999" stroke-width="1.6" marker-end="url(#pa)" marker-start="url(#pas)"/>
+  <rect x="150" y="392" width="120" height="18" rx="3" fill="#ffffff"/>
+  <text x="210" y="405" text-anchor="middle" font-size="10.5" fill="#6b7280">AV（映像・音声）</text>
+
+  <text x="32" y="490" font-size="12" fill="#374151">認可(canSendTo)・保存・履歴 API・DB スキーマは案E／案D と共有。送信経路だけが「Route Handler → sendData」。</text>
+  <text x="32" y="510" font-size="12" fill="#6b7280">追加インフラ無し（既存 LiveKit を再利用）。添付は S3(presigned, 図では省略)。受信は LiveKit ルーム接続中のみ。</text>
+</svg>

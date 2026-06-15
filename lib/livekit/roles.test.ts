@@ -33,6 +33,19 @@ describe('videoGrantFor', () => {
       canSubscribe: true,
     });
   });
+
+  it.each(['moderator', 'panelist', 'observer'] as const)(
+    '%s は canPublishData が付与される（チャットのデータ送信に必要）',
+    (role) => {
+      expect(videoGrantFor(role, 'room-1').canPublishData).toBe(true);
+    },
+  );
+
+  it('オブザーバーは映像 publish 不可だがデータ publish は可（独立した権限）', () => {
+    const grant = videoGrantFor('observer', 'room-1');
+    expect(grant.canPublish).toBe(false);
+    expect(grant.canPublishData).toBe(true);
+  });
 });
 
 describe('canBroadcast', () => {

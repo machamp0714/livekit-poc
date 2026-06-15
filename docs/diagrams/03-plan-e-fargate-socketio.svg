@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560" font-family="'Helvetica Neue',Arial,'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif">
+  <defs>
+    <marker id="a3" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4 L0,8 Z" fill="#5a5a5a"/></marker>
+    <marker id="a3s" markerWidth="12" markerHeight="12" refX="0" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M9,0 L0,4 L9,8 Z" fill="#5a5a5a"/></marker>
+  </defs>
+  <rect width="1000" height="560" fill="#ffffff"/>
+  <text x="32" y="40" font-size="20" font-weight="700" fill="#1f2937">案E：ECS Fargate ＋ Socket.IO ＋ Redis ＋ RDS（ActionCable に最も近い）</text>
+
+  <!-- AWS container -->
+  <rect x="298" y="92" width="672" height="372" rx="14" fill="#F4F7FB" stroke="#7593b8" stroke-width="1.8" stroke-dasharray="6 4"/>
+  <text x="320" y="118" font-size="14" font-weight="700" fill="#5b7aa3">AWS</text>
+
+  <!-- Client -->
+  <rect x="44" y="198" width="214" height="92" rx="10" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="1.8"/>
+  <text x="151" y="236" text-anchor="middle" font-size="14" font-weight="600" fill="#1f2937">ブラウザ</text>
+  <text x="151" y="256" text-anchor="middle" font-size="11.5" fill="#6b7280">role 付き JWT を保持</text>
+
+  <!-- Fargate -->
+  <rect x="330" y="172" width="252" height="100" rx="10" fill="#FFE6CC" stroke="#D79B00" stroke-width="1.8"/>
+  <text x="456" y="204" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2937">ECS Fargate ×N</text>
+  <text x="456" y="224" text-anchor="middle" font-size="11.5" fill="#6b5b3e">Socket.IO サーバー（常駐）</text>
+  <text x="456" y="243" text-anchor="middle" font-size="11" fill="#6b7280">認可(canSendTo)・rooms</text>
+
+  <!-- Redis -->
+  <rect x="632" y="158" width="190" height="82" rx="10" fill="#F8CECC" stroke="#B85450" stroke-width="1.8"/>
+  <text x="727" y="190" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1f2937">ElastiCache Redis</text>
+  <text x="727" y="208" text-anchor="middle" font-size="10.5" fill="#7a3b38">タスク間 fanout</text>
+  <text x="727" y="224" text-anchor="middle" font-size="10.5" fill="#7a3b38">（スケール時のみ）</text>
+
+  <!-- RDS -->
+  <rect x="632" y="300" width="190" height="82" rx="10" fill="#D5E8D4" stroke="#82B366" stroke-width="1.8"/>
+  <text x="727" y="334" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1f2937">RDS Postgres</text>
+  <text x="727" y="353" text-anchor="middle" font-size="10.5" fill="#3f6f43">永続化・履歴・CSV</text>
+
+  <!-- S3 -->
+  <rect x="330" y="302" width="252" height="66" rx="10" fill="#E1D5E7" stroke="#9673A6" stroke-width="1.8"/>
+  <text x="456" y="331" text-anchor="middle" font-size="12.5" fill="#1f2937">S3</text>
+  <text x="456" y="349" text-anchor="middle" font-size="10.5" fill="#6b5b7e">添付</text>
+
+  <!-- LiveKit -->
+  <rect x="44" y="372" width="214" height="72" rx="10" fill="#F5F5F5" stroke="#999999" stroke-width="1.6"/>
+  <text x="151" y="404" text-anchor="middle" font-size="13" fill="#374151">LiveKit</text>
+  <text x="151" y="423" text-anchor="middle" font-size="11" fill="#6b7280">映像・音声のみ</text>
+
+  <!-- edges -->
+  <line x1="258" y1="232" x2="326" y2="216" stroke="#5a5a5a" stroke-width="1.9" marker-end="url(#a3)" marker-start="url(#a3s)"/>
+  <rect x="250" y="200" width="100" height="17" rx="3" fill="#ffffff"/>
+  <text x="300" y="213" text-anchor="middle" font-size="10.5" fill="#6b7280">Socket.IO（WS）</text>
+  <text x="300" y="246" text-anchor="middle" font-size="10" fill="#9ca3af">ALB 経由</text>
+  <line x1="582" y1="205" x2="628" y2="199" stroke="#B85450" stroke-width="1.8" marker-end="url(#a3)" marker-start="url(#a3s)"/>
+  <rect x="556" y="166" width="96" height="17" rx="3" fill="#ffffff"/>
+  <text x="604" y="179" text-anchor="middle" font-size="10.5" fill="#7a3b38">pub/sub adapter</text>
+  <line x1="560" y1="272" x2="636" y2="320" stroke="#82B366" stroke-width="1.8" marker-end="url(#a3)"/>
+  <rect x="556" y="282" width="110" height="17" rx="3" fill="#ffffff"/>
+  <text x="611" y="295" text-anchor="middle" font-size="10.5" fill="#3f6f43">INSERT / SELECT</text>
+  <line x1="190" y1="290" x2="326" y2="330" stroke="#9673A6" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#a3)"/>
+  <text x="252" y="300" text-anchor="middle" font-size="10.5" fill="#6b5b7e">presigned</text>
+  <line x1="151" y1="290" x2="151" y2="368" stroke="#999999" stroke-width="1.6" marker-end="url(#a3)"/>
+  <text x="186" y="334" text-anchor="middle" font-size="10.5" fill="#6b7280">AV</text>
+
+  <text x="32" y="496" font-size="12.5" fill="#374151">ポイント：Socket.IO の rooms＝チャネルで受信認可が自然。単一インスタンスなら Redis 不要で開始可。チャットは LiveKit 非依存。</text>
+  <text x="32" y="515" font-size="12" fill="#b85450">注意：常駐プロセス（Fargate）＝アイドルでも固定費。水平スケールに Redis とデプロイ時の接続断対策が必要。</text>
+</svg>

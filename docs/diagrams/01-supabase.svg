@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="560" viewBox="0 0 980 560" font-family="'Helvetica Neue',Arial,'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif">
+  <defs>
+    <marker id="a" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4 L0,8 Z" fill="#5a5a5a"/></marker>
+    <marker id="as" markerWidth="12" markerHeight="12" refX="0" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M9,0 L0,4 L9,8 Z" fill="#5a5a5a"/></marker>
+  </defs>
+  <rect width="980" height="560" fill="#ffffff"/>
+  <text x="32" y="40" font-size="20" font-weight="700" fill="#1f2937">案B：Supabase 採用 — マネージド BaaS でチャットを AV から分離</text>
+
+  <!-- Supabase container -->
+  <rect x="430" y="92" width="510" height="356" rx="14" fill="#F7F4FB" stroke="#9673A6" stroke-width="1.8" stroke-dasharray="6 4"/>
+  <text x="452" y="120" font-size="14" font-weight="700" fill="#7d5ba6">Supabase（マネージド）</text>
+
+  <!-- Client -->
+  <rect x="48" y="190" width="220" height="92" rx="10" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="1.8"/>
+  <text x="158" y="228" text-anchor="middle" font-size="14" font-weight="600" fill="#1f2937">Next.js 実査アプリ</text>
+  <text x="158" y="248" text-anchor="middle" font-size="12.5" fill="#374151">（ブラウザ）</text>
+  <text x="158" y="267" text-anchor="middle" font-size="11.5" fill="#6b7280">role 付き JWT を保持</text>
+
+  <!-- Realtime -->
+  <rect x="458" y="150" width="210" height="76" rx="10" fill="#FFE6CC" stroke="#D79B00" stroke-width="1.8"/>
+  <text x="563" y="184" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2937">Realtime</text>
+  <text x="563" y="203" text-anchor="middle" font-size="11.5" fill="#6b5b3e">WebSocket 配信</text>
+
+  <!-- Auth -->
+  <rect x="700" y="150" width="210" height="76" rx="10" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.8"/>
+  <text x="805" y="184" text-anchor="middle" font-size="13.5" fill="#1f2937">Auth / JWT 検証</text>
+  <text x="805" y="203" text-anchor="middle" font-size="11.5" fill="#6b7280">（既存 JWT 連携可）</text>
+
+  <!-- Postgres + RLS -->
+  <rect x="458" y="320" width="210" height="92" rx="10" fill="#D5E8D4" stroke="#82B366" stroke-width="1.8"/>
+  <text x="563" y="352" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2937">Postgres ＋ RLS</text>
+  <text x="563" y="372" text-anchor="middle" font-size="11.5" fill="#3f6f43">永続化・履歴・CSV</text>
+  <text x="563" y="390" text-anchor="middle" font-size="11.5" fill="#3f6f43">ロール別チャネル認可</text>
+
+  <!-- Storage -->
+  <rect x="700" y="320" width="210" height="92" rx="10" fill="#E1D5E7" stroke="#9673A6" stroke-width="1.8"/>
+  <text x="805" y="362" text-anchor="middle" font-size="13.5" fill="#1f2937">Storage</text>
+  <text x="805" y="382" text-anchor="middle" font-size="11.5" fill="#6b5b7e">添付ファイル</text>
+
+  <!-- LiveKit -->
+  <rect x="48" y="372" width="220" height="74" rx="10" fill="#F5F5F5" stroke="#999999" stroke-width="1.6"/>
+  <text x="158" y="404" text-anchor="middle" font-size="13.5" fill="#374151">LiveKit</text>
+  <text x="158" y="423" text-anchor="middle" font-size="11.5" fill="#6b7280">映像・音声のみ（チャット非関与）</text>
+
+  <!-- edges -->
+  <!-- client <-> realtime (bidi) -->
+  <line x1="268" y1="210" x2="454" y2="186" stroke="#5a5a5a" stroke-width="1.8" marker-end="url(#a)" marker-start="url(#as)"/>
+  <rect x="300" y="178" width="128" height="18" rx="3" fill="#ffffff"/>
+  <text x="364" y="191" text-anchor="middle" font-size="11.5" fill="#6b7280">subscribe / push</text>
+  <!-- client -> postgres -->
+  <line x1="268" y1="250" x2="454" y2="350" stroke="#5a5a5a" stroke-width="1.8" marker-end="url(#a)"/>
+  <rect x="290" y="296" width="170" height="18" rx="3" fill="#ffffff"/>
+  <text x="375" y="309" text-anchor="middle" font-size="11.5" fill="#6b7280">INSERT（RLS で送信認可）</text>
+  <!-- postgres -> realtime -->
+  <line x1="563" y1="320" x2="563" y2="228" stroke="#82B366" stroke-width="1.8" marker-end="url(#a)"/>
+  <rect x="566" y="266" width="120" height="18" rx="3" fill="#ffffff"/>
+  <text x="626" y="279" text-anchor="middle" font-size="11.5" fill="#3f6f43">Changes/Broadcast</text>
+  <!-- client -> storage -->
+  <line x1="268" y1="266" x2="696" y2="360" stroke="#9673A6" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#a)"/>
+  <rect x="470" y="318" width="160" height="18" rx="3" fill="#ffffff"/>
+  <text x="550" y="331" text-anchor="middle" font-size="11.5" fill="#6b5b7e">添付 upload（presigned）</text>
+  <!-- client -> livekit -->
+  <line x1="158" y1="282" x2="158" y2="368" stroke="#999999" stroke-width="1.6" marker-end="url(#a)"/>
+  <text x="200" y="332" text-anchor="middle" font-size="11.5" fill="#6b7280">AV（別系統）</text>
+
+  <!-- note -->
+  <text x="32" y="492" font-size="12.5" fill="#374151">ポイント：realtime・DB・認可(RLS)・storage・auth が単一基盤に集約。チャットは LiveKit に非依存。</text>
+  <text x="32" y="512" font-size="12" fill="#b85450">注意：DB は Supabase Postgres になる。「DB＝RDS」方針とは要調整（§Supabase の注記）。</text>
+</svg>
