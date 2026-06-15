@@ -20,6 +20,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 - 接続テスト検証: [`CONNECTION_TEST_VERIFICATION.md`](./CONNECTION_TEST_VERIFICATION.md)
 - チャット検証（LiveKit Data / Text streams）: [`CHAT_POC_FINDINGS.md`](./CHAT_POC_FINDINGS.md) — 3 階層チャネル・ロール別権限の実現可否、永続化/履歴/CSV/添付/スタンプ/録画状態通知の対応表、ActionCable 継続 vs LiveKit ネイティブの比較と推奨、2 ブラウザ手動検証手順を記載。
+- チャット リアルタイム層 アーキテクチャ比較: [`docs/chat-realtime-architecture.md`](./docs/chat-realtime-architecture.md) — 独立 Next.js アプリ（RDS 前提）でのリアルタイム配信層 Supabase / 案D(API GW WebSocket) / 案E(Fargate+Socket.IO) を drawio 図つきで比較。
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

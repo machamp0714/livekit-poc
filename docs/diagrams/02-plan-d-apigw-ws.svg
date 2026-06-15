@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560" font-family="'Helvetica Neue',Arial,'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif">
+  <defs>
+    <marker id="a2" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,4 L0,8 Z" fill="#5a5a5a"/></marker>
+    <marker id="a2s" markerWidth="12" markerHeight="12" refX="0" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M9,0 L0,4 L9,8 Z" fill="#5a5a5a"/></marker>
+  </defs>
+  <rect width="1000" height="560" fill="#ffffff"/>
+  <text x="32" y="40" font-size="20" font-weight="700" fill="#1f2937">案D：API Gateway WebSocket ＋ Lambda ＋ RDS（AWS サーバーレス）</text>
+
+  <!-- AWS container -->
+  <rect x="298" y="92" width="672" height="372" rx="14" fill="#F4F7FB" stroke="#7593b8" stroke-width="1.8" stroke-dasharray="6 4"/>
+  <text x="320" y="118" font-size="14" font-weight="700" fill="#5b7aa3">AWS</text>
+
+  <!-- Client -->
+  <rect x="44" y="198" width="214" height="92" rx="10" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="1.8"/>
+  <text x="151" y="236" text-anchor="middle" font-size="14" font-weight="600" fill="#1f2937">ブラウザ</text>
+  <text x="151" y="256" text-anchor="middle" font-size="11.5" fill="#6b7280">role 付き JWT を保持</text>
+
+  <!-- API GW -->
+  <rect x="324" y="158" width="196" height="74" rx="10" fill="#FFE6CC" stroke="#D79B00" stroke-width="1.8"/>
+  <text x="422" y="190" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2937">API Gateway</text>
+  <text x="422" y="209" text-anchor="middle" font-size="11.5" fill="#6b5b3e">WebSocket API</text>
+
+  <!-- Lambda -->
+  <rect x="582" y="158" width="184" height="74" rx="10" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.8"/>
+  <text x="674" y="186" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2937">Lambda</text>
+  <text x="674" y="205" text-anchor="middle" font-size="11" fill="#6b7280">認可(canSendTo)・配信</text>
+
+  <!-- RDS Proxy -->
+  <rect x="806" y="158" width="138" height="74" rx="10" fill="#E6F1E2" stroke="#82B366" stroke-width="1.6"/>
+  <text x="875" y="190" text-anchor="middle" font-size="12.5" fill="#1f2937">RDS Proxy</text>
+  <text x="875" y="208" text-anchor="middle" font-size="10.5" fill="#6b7280">接続プール</text>
+
+  <!-- DynamoDB -->
+  <rect x="582" y="300" width="184" height="68" rx="10" fill="#DBEAE6" stroke="#3a9188" stroke-width="1.6"/>
+  <text x="674" y="330" text-anchor="middle" font-size="12.5" fill="#1f2937">DynamoDB</text>
+  <text x="674" y="348" text-anchor="middle" font-size="10.5" fill="#6b7280">接続レジストリ</text>
+
+  <!-- RDS -->
+  <rect x="806" y="300" width="138" height="74" rx="10" fill="#D5E8D4" stroke="#82B366" stroke-width="1.8"/>
+  <text x="875" y="332" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1f2937">RDS Postgres</text>
+  <text x="875" y="350" text-anchor="middle" font-size="10.5" fill="#3f6f43">永続化・履歴</text>
+
+  <!-- S3 -->
+  <rect x="324" y="300" width="196" height="68" rx="10" fill="#E1D5E7" stroke="#9673A6" stroke-width="1.8"/>
+  <text x="422" y="330" text-anchor="middle" font-size="12.5" fill="#1f2937">S3</text>
+  <text x="422" y="348" text-anchor="middle" font-size="10.5" fill="#6b5b7e">添付</text>
+
+  <!-- LiveKit -->
+  <rect x="44" y="372" width="214" height="72" rx="10" fill="#F5F5F5" stroke="#999999" stroke-width="1.6"/>
+  <text x="151" y="404" text-anchor="middle" font-size="13" fill="#374151">LiveKit</text>
+  <text x="151" y="423" text-anchor="middle" font-size="11" fill="#6b7280">映像・音声のみ</text>
+
+  <!-- edges -->
+  <line x1="258" y1="232" x2="320" y2="200" stroke="#5a5a5a" stroke-width="1.9" marker-end="url(#a2)" marker-start="url(#a2s)"/>
+  <rect x="252" y="196" width="78" height="17" rx="3" fill="#ffffff"/>
+  <text x="291" y="209" text-anchor="middle" font-size="10.5" fill="#6b7280">WebSocket</text>
+  <line x1="520" y1="195" x2="578" y2="195" stroke="#5a5a5a" stroke-width="1.8" marker-end="url(#a2)"/>
+  <text x="549" y="186" text-anchor="middle" font-size="10.5" fill="#6b7280">invoke</text>
+  <line x1="766" y1="195" x2="802" y2="195" stroke="#5a5a5a" stroke-width="1.8" marker-end="url(#a2)"/>
+  <line x1="875" y1="232" x2="875" y2="296" stroke="#82B366" stroke-width="1.8" marker-end="url(#a2)"/>
+  <rect x="838" y="255" width="120" height="17" rx="3" fill="#ffffff"/>
+  <text x="898" y="268" text-anchor="middle" font-size="10.5" fill="#3f6f43">INSERT / SELECT</text>
+  <line x1="674" y1="232" x2="674" y2="296" stroke="#5a5a5a" stroke-width="1.7" marker-end="url(#a2)" marker-start="url(#a2s)"/>
+  <rect x="624" y="256" width="100" height="17" rx="3" fill="#ffffff"/>
+  <text x="674" y="269" text-anchor="middle" font-size="10.5" fill="#6b7280">接続登録 / 参照</text>
+  <!-- push back arrow Lambda -> API GW -->
+  <path d="M 660,158 L 660,134 L 437,134 L 437,158" fill="none" stroke="#d79b00" stroke-width="2" marker-end="url(#a2)"/>
+  <rect x="470" y="124" width="150" height="18" rx="3" fill="#ffffff"/>
+  <text x="545" y="137" text-anchor="middle" font-size="11" font-weight="600" fill="#d79b00">@connections で push</text>
+  <!-- client -> s3 -->
+  <line x1="180" y1="290" x2="320" y2="330" stroke="#9673A6" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#a2)"/>
+  <text x="250" y="300" text-anchor="middle" font-size="10.5" fill="#6b5b7e">presigned</text>
+  <!-- client -> livekit -->
+  <line x1="151" y1="290" x2="151" y2="368" stroke="#999999" stroke-width="1.6" marker-end="url(#a2)"/>
+  <text x="186" y="334" text-anchor="middle" font-size="10.5" fill="#6b7280">AV</text>
+
+  <text x="32" y="496" font-size="12.5" fill="#374151">ポイント：フルマネージド・サーバーレス。RDS をそのまま正に使える。チャットは LiveKit 非依存。</text>
+  <text x="32" y="515" font-size="12" fill="#b85450">注意：API GW WS ＋ Lambda ＋ DynamoDB(接続表) ＋ RDS Proxy と部品が多く、初期構築コスト高。</text>
+</svg>
