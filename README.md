@@ -16,6 +16,11 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## PoC 検証メモ
+
+- 接続テスト検証: [`CONNECTION_TEST_VERIFICATION.md`](./CONNECTION_TEST_VERIFICATION.md)
+- チャット検証（LiveKit Data / Text streams）: [`docs/chat-poc-findings.md`](./docs/chat-poc-findings.md) — 3 階層チャネル・ロール別権限の実現可否、永続化/履歴/CSV/添付/スタンプ/録画状態通知の対応表、ActionCable 継続 vs LiveKit ネイティブの比較と推奨、2 ブラウザ手動検証手順を記載。
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
