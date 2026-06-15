@@ -1,7 +1,7 @@
 # 案E 実装案（サンプルコード）— ECS Fargate + Socket.IO + Redis + RDS
 
 > 将来の独立 Next.js 実査アプリ向けの**実装提案**。現 PoC（LiveKit Text streams 直）には組み込まない参照用コード。
-> 構成の解説は [`chat-realtime-architecture.md` §4](./chat-realtime-architecture.md)、PoC 所見は [`../CHAT_POC_FINDINGS.md`](../CHAT_POC_FINDINGS.md)。
+> 構成の解説は [`chat-realtime-architecture.md` §5](./chat-realtime-architecture.md)、PoC 所見は [`../CHAT_POC_FINDINGS.md`](../CHAT_POC_FINDINGS.md)。
 
 ## 設計の要点
 

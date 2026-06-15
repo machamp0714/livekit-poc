@@ -52,7 +52,7 @@
 | 0:48–1:03 | 決定（or スパイク実施の判断） | 採用案 or スパイク計画 |
 | 1:03–1:15 | ADR 記録・宿題・**再検討トリガ**の確認 | ADR ドラフト |
 
-> 決め切れない場合：本命（多くの場合 案E）を **1〜2 日のスパイク**で検証（[`chat-realtime-architecture.md` §7](./chat-realtime-architecture.md) のローカル手順）。「3階層チャネル＋private 宛先限定＋RDS 永続化＋リロード履歴」が再現できるかを実測して次回決定。
+> 決め切れない場合：本命（多くの場合 案E）を **1〜2 日のスパイク**で検証（[`chat-realtime-architecture.md` §8](./chat-realtime-architecture.md) のローカル手順）。「3階層チャネル＋private 宛先限定＋RDS 永続化＋リロード履歴」が再現できるかを実測して次回決定。
 
 ---
 
