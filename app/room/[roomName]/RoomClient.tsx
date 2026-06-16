@@ -65,7 +65,7 @@ export function RoomClient({ roomName, name, role }: Props) {
       video={broadcast}
       data-lk-theme="default"
     >
-      <RoomBody role={role} roomName={roomName} />
+      <RoomBody role={role} roomName={roomName} token={token} />
       <RoomAudioRenderer />
     </LiveKitRoom>
   );

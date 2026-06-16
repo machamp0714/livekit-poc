@@ -1,25 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useParticipants, useRoomContext } from '@livekit/components-react';
+import { useRoomContext } from '@livekit/components-react';
+import { RoomEvent } from 'livekit-client';
 import type { Role } from '@/lib/livekit/roles';
-import {
-  CHANNEL_TOPIC,
-  buildSendPlan,
-  canSendTo,
-  visibleChannels,
-  type ChatChannel,
-  type ChatParticipant,
-} from '@/lib/livekit/chat';
-
-interface ChatLine {
-  id: string;
-  fromName: string;
-  fromIdentity: string;
-  text: string;
-  channel: ChatChannel;
-  self: boolean;
-}
+import { canSendTo, visibleChannels, type ChatChannel } from '@/lib/livekit/chat';
+import { decodeChatMessage, type ChatMessage } from '@/lib/livekit/chat-message';
 
 const CHANNEL_LABEL: Record<ChatChannel, string> = {
   public: '全体 (public)',
@@ -27,101 +13,91 @@ const CHANNEL_LABEL: Record<ChatChannel, string> = {
   observer_only: 'オブザーバー間 (observer_only)',
 };
 
-function roleOf(metadata: string | undefined): Role | null {
-  if (!metadata) return null;
-  try {
-    const parsed = JSON.parse(metadata) as { role?: Role };
-    return parsed.role ?? null;
-  } catch {
-    return null;
-  }
-}
-
 /**
- * 実査チャットの最小検証 UI。
- * LiveKit Text streams（sendText / registerTextStreamHandler）の生 API で
- * 3 階層チャネルを topic + destinationIdentities として表現する。
- * 永続化・履歴は無し（LiveKit の仕様）＝リロードで消える。
+ * 案A：サーバー権威 + LiveKit データチャネル再利用。
+ * 送信は /api/chat へ POST（サーバーが認可・保存・sendData 配信）。
+ * 受信は RoomEvent.DataReceived（data packet を decode）。
+ * 履歴は GET /api/chat（リロードしても復元）。
  */
-export function ChatPanel({ role }: { role: Role }) {
+export function ChatPanel({
+  role,
+  roomName,
+  token,
+}: {
+  role: Role;
+  roomName: string;
+  token: string;
+}) {
   const room = useRoomContext();
-  const participants = useParticipants();
-
   const channels = useMemo(() => visibleChannels(role), [role]);
   const [activeChannel, setActiveChannel] = useState<ChatChannel>(
     channels[0] ?? 'public',
   );
-  const [lines, setLines] = useState<ChatLine[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState('');
-  const seq = useRef(0);
+  const seen = useRef<Set<string>>(new Set());
 
-  // 宛先計算に使う参加者一覧（ロールは metadata から復元）。
-  const chatParticipants: ChatParticipant[] = useMemo(
-    () =>
-      participants
-        .map((p) => {
-          const r = roleOf(p.metadata);
-          return r ? { identity: p.identity, role: r } : null;
-        })
-        .filter((p): p is ChatParticipant => p !== null),
-    [participants],
-  );
+  const add = useCallback((m: ChatMessage) => {
+    setMessages((prev) => {
+      if (seen.current.has(m.id)) return prev;
+      seen.current.add(m.id);
+      return [...prev, m].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+    });
+  }, []);
 
-  // 受信ハンドラ登録。可視チャネルの topic ごとに 1 つ。
+  // 受信：data packet
   useEffect(() => {
-    for (const channel of channels) {
-      const topic = CHANNEL_TOPIC[channel];
-      room.registerTextStreamHandler(topic, async (reader, info) => {
-        const text = await reader.readAll();
-        setLines((prev) => [
-          ...prev,
-          {
-            id: `${reader.info.id}-${(seq.current += 1)}`,
-            fromName: info.identity,
-            fromIdentity: info.identity,
-            text,
-            channel,
-            self: false,
-          },
-        ]);
-      });
-    }
-    return () => {
-      for (const channel of channels) {
-        room.unregisterTextStreamHandler(CHANNEL_TOPIC[channel]);
+    const handler = (payload: Uint8Array) => {
+      try {
+        add(decodeChatMessage(payload));
+      } catch {
+        /* チャット以外の data packet は無視 */
       }
     };
-  }, [room, channels]);
+    room.on(RoomEvent.DataReceived, handler);
+    return () => {
+      room.off(RoomEvent.DataReceived, handler);
+    };
+  }, [room, add]);
+
+  // 履歴ロード（リロード・後入室の復元）
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/chat?room=${encodeURIComponent(roomName)}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((d: { messages?: ChatMessage[] }) => {
+        if (!cancelled) d.messages?.forEach(add);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [roomName, token, add]);
 
   const maySend = canSendTo(role, activeChannel);
 
   const send = useCallback(async () => {
     const text = draft.trim();
-    if (!text) return;
-    const plan = buildSendPlan(role, activeChannel, chatParticipants);
-    if (!plan) return;
-
-    await room.localParticipant.sendText(text, {
-      topic: plan.topic,
-      destinationIdentities: plan.destinationIdentities,
-    });
-
-    // 送信者には自分の stream は配信されないのでローカルにエコー表示する。
-    setLines((prev) => [
-      ...prev,
-      {
-        id: `self-${(seq.current += 1)}`,
-        fromName: `${room.localParticipant.name ?? room.localParticipant.identity}（自分）`,
-        fromIdentity: room.localParticipant.identity,
-        text,
-        channel: activeChannel,
-        self: true,
+    if (!text || !maySend) return;
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
-    ]);
-    setDraft('');
-  }, [draft, role, activeChannel, chatParticipants, room]);
+      body: JSON.stringify({ room: roomName, channel: activeChannel, body: text }),
+    });
+    if (res.ok) {
+      // 送信者には sendData がループバックしないので応答からローカル反映
+      const d = (await res.json()) as { message: ChatMessage };
+      add(d.message);
+      setDraft('');
+    }
+  }, [draft, maySend, token, roomName, activeChannel, add]);
 
-  const visibleLines = lines.filter((l) => l.channel === activeChannel);
+  const visibleLines = messages.filter((m) => m.channel === activeChannel);
 
   return (
     <div
@@ -160,12 +136,12 @@ export function ChatPanel({ role }: { role: Role }) {
         {visibleLines.length === 0 ? (
           <p style={{ color: '#888', margin: 0 }}>まだメッセージはありません。</p>
         ) : (
-          visibleLines.map((l) => (
-            <div key={l.id} style={{ marginBottom: 6 }}>
-              <span style={{ color: l.self ? '#7fb0ff' : '#9fdf9f' }}>
-                {l.fromName}
+          visibleLines.map((m) => (
+            <div key={m.id} style={{ marginBottom: 6 }}>
+              <span style={{ color: m.senderIdentity === room.localParticipant.identity ? '#7fb0ff' : '#9fdf9f' }}>
+                {m.senderName ?? m.senderIdentity}
               </span>
-              <span style={{ color: '#bbb' }}>: {l.text}</span>
+              <span style={{ color: '#bbb' }}>: {m.body}</span>
             </div>
           ))
         )}
