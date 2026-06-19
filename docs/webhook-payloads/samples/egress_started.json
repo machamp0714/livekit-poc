@@ -1,0 +1,95 @@
+{
+  "event": "egress_started",
+  "id": "EV_YbFEADdLD8va",
+  "createdAt": "1781859185",
+  "egressInfo": {
+    "egressId": "EG_zwf4CH9Z9gNK",
+    "roomId": "RM_dh2ckfyMUnbS",
+    "status": "EGRESS_STARTING",
+    "roomComposite": {
+      "roomName": "interview-poc",
+      "layout": "",
+      "audioOnly": false,
+      "videoOnly": false,
+      "customBaseUrl": "",
+      "file": {
+        "fileType": "DEFAULT_FILETYPE",
+        "filepath": "livekit-poc/interview-poc/1781859185105.mp4",
+        "s3": {
+          "accessKey": "{access_key}",
+          "secret": "{secret}",
+          "region": "us-east-1",
+          "endpoint": "http://localhost:9000",
+          "bucket": "livekit-poc-recordings",
+          "forcePathStyle": true,
+          "metadata": {},
+          "tagging": "",
+          "contentDisposition": "",
+          "sessionToken": "",
+          "assumeRoleArn": "",
+          "assumeRoleExternalId": ""
+        },
+        "disableManifest": false
+      },
+      "fileOutputs": [
+        {
+          "fileType": "DEFAULT_FILETYPE",
+          "filepath": "livekit-poc/interview-poc/1781859185105.mp4",
+          "s3": {
+            "accessKey": "{access_key}",
+            "secret": "{secret}",
+            "region": "us-east-1",
+            "endpoint": "http://localhost:9000",
+            "bucket": "livekit-poc-recordings",
+            "forcePathStyle": true,
+            "metadata": {},
+            "tagging": "",
+            "contentDisposition": "",
+            "sessionToken": "",
+            "assumeRoleArn": "",
+            "assumeRoleExternalId": ""
+          },
+          "disableManifest": false
+        }
+      ],
+      "streamOutputs": [],
+      "segmentOutputs": [],
+      "imageOutputs": [],
+      "audioMixing": "DEFAULT_MIXING",
+      "webhooks": []
+    },
+    "file": {
+      "filename": "livekit-poc/interview-poc/1781859185105.mp4",
+      "startedAt": "0",
+      "endedAt": "0",
+      "size": "0",
+      "location": "",
+      "duration": "0"
+    },
+    "error": "",
+    "startedAt": "1781859185642186544",
+    "endedAt": "0",
+    "roomName": "interview-poc",
+    "streamResults": [],
+    "fileResults": [
+      {
+        "filename": "livekit-poc/interview-poc/1781859185105.mp4",
+        "startedAt": "0",
+        "endedAt": "0",
+        "size": "0",
+        "location": "",
+        "duration": "0"
+      }
+    ],
+    "segmentResults": [],
+    "updatedAt": "1781859185642186544",
+    "imageResults": [],
+    "details": "",
+    "errorCode": 0,
+    "manifestLocation": "",
+    "backupStorageUsed": false,
+    "sourceType": "EGRESS_SOURCE_TYPE_WEB",
+    "retryCount": 0
+  },
+  "numDropped": 0
+}

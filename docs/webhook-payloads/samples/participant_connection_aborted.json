@@ -1,0 +1,93 @@
+{
+  "event": "participant_connection_aborted",
+  "room": {
+    "sid": "RM_YeJKzbEAkipq",
+    "name": "precall-iutonw",
+    "emptyTimeout": 300,
+    "maxParticipants": 0,
+    "creationTime": "1781858998",
+    "turnPassword": "6j0R7QET4olsfHvHQvJT5DAec3fzOlyvHT8eH8hZIypB",
+    "enabledCodecs": [
+      {
+        "mime": "audio/PCMU",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "audio/PCMA",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "audio/opus",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "audio/red",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "video/VP8",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "video/H264",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "video/VP9",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "video/AV1",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "video/H265",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "video/rtx",
+        "fmtpLine": ""
+      }
+    ],
+    "metadata": "",
+    "numParticipants": 0,
+    "activeRecording": false,
+    "numPublishers": 0,
+    "departureTimeout": 20,
+    "creationTimeMs": "1781858998888"
+  },
+  "participant": {
+    "sid": "PA_sHV67RSAPDT9",
+    "identity": "precall-PanelistA-1781858998702",
+    "state": "DISCONNECTED",
+    "tracks": [],
+    "metadata": "{\"role\":\"panelist\"}",
+    "joinedAt": "1781858998",
+    "name": "PanelistA",
+    "version": 2,
+    "permission": {
+      "canSubscribe": true,
+      "canPublish": true,
+      "canPublishData": true,
+      "hidden": false,
+      "recorder": false,
+      "canPublishSources": [],
+      "canUpdateMetadata": false,
+      "agent": false,
+      "canSubscribeMetrics": false,
+      "canManageAgentSession": false
+    },
+    "region": "",
+    "isPublisher": false,
+    "kind": "STANDARD",
+    "attributes": {},
+    "disconnectReason": "SIGNAL_CLOSE",
+    "joinedAtMs": "1781858998891",
+    "kindDetails": [],
+    "dataTracks": [],
+    "clientProtocol": 0
+  },
+  "id": "EV_fkpuADPrA5pM",
+  "createdAt": "1781858999",
+  "numDropped": 0
+}
