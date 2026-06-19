@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRoomContext } from '@livekit/components-react';
 import { RoomEvent } from 'livekit-client';
 import type { Role } from '@/lib/livekit/roles';
@@ -35,12 +35,13 @@ export function ChatPanel({
   );
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState('');
-  const seen = useRef<Set<string>>(new Set());
 
+  // 純粋なupdater（prev 配列で重複排除）。ref の副作用を updater 内に持つと
+  // React StrictMode の二重呼び出しで「2 回目が重複扱い」になりメッセージが
+  // 落ちるため、seen ref は使わず prev に対して id 重複を判定する。
   const add = useCallback((m: ChatMessage) => {
     setMessages((prev) => {
-      if (seen.current.has(m.id)) return prev;
-      seen.current.add(m.id);
+      if (prev.some((x) => x.id === m.id)) return prev;
       return [...prev, m].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
     });
   }, []);
@@ -66,11 +67,18 @@ export function ChatPanel({
     fetch(`/api/chat?room=${encodeURIComponent(roomName)}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((r) => r.json())
-      .then((d: { messages?: ChatMessage[] }) => {
+      .then(async (r) => {
+        const text = await r.text();
+        const d = (text ? JSON.parse(text) : {}) as {
+          messages?: ChatMessage[];
+          error?: string;
+        };
+        if (!r.ok) throw new Error(`history ${r.status}: ${d.error ?? text}`);
         if (!cancelled) d.messages?.forEach(add);
       })
-      .catch(() => {});
+      .catch((e) => {
+        console.error('[chat] history load failed', e);
+      });
     return () => {
       cancelled = true;
     };
