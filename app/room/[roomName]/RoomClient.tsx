@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   LiveKitRoom,
   RoomAudioRenderer,
@@ -12,6 +13,7 @@ import { RoomBody } from './RoomBody';
 type Props = { roomName: string; name: string; role: Role };
 
 export function RoomClient({ roomName, name, role }: Props) {
+  const router = useRouter();
   const [identity] = useState(
     () => `${name}-${Math.random().toString(36).slice(2, 8)}`,
   );
@@ -64,8 +66,9 @@ export function RoomClient({ roomName, name, role }: Props) {
       audio={broadcast}
       video={broadcast}
       data-lk-theme="default"
+      onDisconnected={() => router.push('/')}
     >
-      <RoomBody role={role} roomName={roomName} />
+      <RoomBody role={role} roomName={roomName} token={token} />
       <RoomAudioRenderer />
     </LiveKitRoom>
   );

@@ -15,7 +15,7 @@ import { RecordingControls } from './RecordingControls';
 import { ModeratorControls } from './ModeratorControls';
 import { ChatPanel } from './ChatPanel';
 
-export function RoomBody({ role, roomName }: { role: Role, roomName: string }) {
+export function RoomBody({ role, roomName, token }: { role: Role, roomName: string, token: string }) {
   const trackRefs = useTracks(
     [
       { source: Track.Source.Camera, withPlaceholder: true },
@@ -45,7 +45,7 @@ export function RoomBody({ role, roomName }: { role: Role, roomName: string }) {
 
       <DiagnosticsPanel />
 
-      <ChatPanel role={role} />
+      <ChatPanel role={role} roomName={roomName} token={token} />
 
       {role === 'moderator' && (
         <>

@@ -13,7 +13,7 @@ export default function LobbyPage() {
   function join(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!name.trim() || !roomName.trim()) return;
-    const query = new URLSearchParams({ name: name.trim(), role });
+    const query = new URLSearchParams({ name: name.trim(), roomName: roomName.trim(), role });
     router.push(`/precall?${query.toString()}`);
   }
 

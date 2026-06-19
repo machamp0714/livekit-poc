@@ -158,9 +158,6 @@ export function DiagnosticsPanel() {
           const report = await safeStatsReport(track);
 
           if (!report) continue;
-          for (const stat of report.values()) {
-            console.log('rtc stat', stat);
-          }
           if (!pubPair) pubPair = extractSelectedPair(report);
           const snap = extractOutboundRtp(report, kind);
           if (!snap) continue;
