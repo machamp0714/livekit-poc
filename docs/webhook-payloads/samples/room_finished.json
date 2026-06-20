@@ -1,0 +1,62 @@
+{
+  "event": "room_finished",
+  "room": {
+    "sid": "RM_YeJKzbEAkipq",
+    "name": "precall-iutonw",
+    "emptyTimeout": 300,
+    "maxParticipants": 0,
+    "creationTime": "1781858998",
+    "turnPassword": "6j0R7QET4olsfHvHQvJT5DAec3fzOlyvHT8eH8hZIypB",
+    "enabledCodecs": [
+      {
+        "mime": "audio/PCMU",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "audio/PCMA",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "audio/opus",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "audio/red",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "video/VP8",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "video/H264",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "video/VP9",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "video/AV1",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "video/H265",
+        "fmtpLine": ""
+      },
+      {
+        "mime": "video/rtx",
+        "fmtpLine": ""
+      }
+    ],
+    "metadata": "",
+    "numParticipants": 0,
+    "activeRecording": false,
+    "numPublishers": 0,
+    "departureTimeout": 20,
+    "creationTimeMs": "1781858998888"
+  },
+  "id": "EV_btKqo6K2RTA6",
+  "createdAt": "1781859059",
+  "numDropped": 0
+}

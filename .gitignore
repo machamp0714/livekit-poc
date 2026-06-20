@@ -43,3 +43,6 @@ next-env.d.ts
 # docs
 docs/
 .next-docs/
+
+# Issue #8 raw webhook payload captures
+webhook-captures/

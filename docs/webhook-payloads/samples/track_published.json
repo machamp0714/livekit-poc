@@ -1,0 +1,137 @@
+{
+  "event": "track_published",
+  "room": {
+    "sid": "RM_YeJKzbEAkipq",
+    "name": "precall-iutonw",
+    "emptyTimeout": 0,
+    "maxParticipants": 0,
+    "creationTime": "0",
+    "turnPassword": "",
+    "enabledCodecs": [],
+    "metadata": "",
+    "numParticipants": 0,
+    "activeRecording": false,
+    "numPublishers": 0,
+    "departureTimeout": 0,
+    "creationTimeMs": "0"
+  },
+  "participant": {
+    "sid": "PA_qUncgdaCnuBa",
+    "identity": "precall-PanelistA-1781858998702",
+    "state": "JOINING",
+    "tracks": [],
+    "metadata": "",
+    "joinedAt": "0",
+    "name": "",
+    "version": 0,
+    "region": "",
+    "isPublisher": false,
+    "kind": "STANDARD",
+    "attributes": {},
+    "disconnectReason": "UNKNOWN_REASON",
+    "joinedAtMs": "0",
+    "kindDetails": [],
+    "dataTracks": [],
+    "clientProtocol": 0
+  },
+  "id": "EV_topsrMTG3tus",
+  "createdAt": "1781859009",
+  "track": {
+    "sid": "TR_VCABzqazLAm8q7",
+    "type": "VIDEO",
+    "name": "",
+    "muted": false,
+    "width": 1280,
+    "height": 720,
+    "simulcast": true,
+    "disableDtx": false,
+    "source": "CAMERA",
+    "layers": [
+      {
+        "quality": "LOW",
+        "width": 320,
+        "height": 180,
+        "bitrate": 160000,
+        "ssrc": 3511451231,
+        "spatialLayer": 0,
+        "rid": "q",
+        "repairSsrc": 0
+      },
+      {
+        "quality": "MEDIUM",
+        "width": 640,
+        "height": 360,
+        "bitrate": 450000,
+        "ssrc": 0,
+        "spatialLayer": 1,
+        "rid": "h",
+        "repairSsrc": 0
+      },
+      {
+        "quality": "HIGH",
+        "width": 1280,
+        "height": 720,
+        "bitrate": 1700000,
+        "ssrc": 0,
+        "spatialLayer": 2,
+        "rid": "f",
+        "repairSsrc": 0
+      }
+    ],
+    "mimeType": "video/VP8",
+    "mid": "7",
+    "codecs": [
+      {
+        "mimeType": "video/VP8",
+        "mid": "7",
+        "cid": "5c5a6f0b-5dca-4731-838b-089f39bc439b",
+        "layers": [
+          {
+            "quality": "LOW",
+            "width": 320,
+            "height": 180,
+            "bitrate": 160000,
+            "ssrc": 3511451231,
+            "spatialLayer": 0,
+            "rid": "q",
+            "repairSsrc": 0
+          },
+          {
+            "quality": "MEDIUM",
+            "width": 640,
+            "height": 360,
+            "bitrate": 450000,
+            "ssrc": 0,
+            "spatialLayer": 1,
+            "rid": "h",
+            "repairSsrc": 0
+          },
+          {
+            "quality": "HIGH",
+            "width": 1280,
+            "height": 720,
+            "bitrate": 1700000,
+            "ssrc": 0,
+            "spatialLayer": 2,
+            "rid": "f",
+            "repairSsrc": 0
+          }
+        ],
+        "videoLayerMode": "ONE_SPATIAL_LAYER_PER_STREAM",
+        "sdpCid": ""
+      }
+    ],
+    "stereo": false,
+    "disableRed": false,
+    "encryption": "NONE",
+    "stream": "camera",
+    "version": {
+      "unixMicro": "1781859008996604",
+      "ticks": 0
+    },
+    "audioFeatures": [],
+    "backupCodecPolicy": "PREFER_REGRESSION",
+    "packetTrailerFeatures": []
+  },
+  "numDropped": 0
+}

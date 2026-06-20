@@ -16,7 +16,7 @@ keys:
 webhook:
   api_key: devkey
   urls:
-    - http://host.docker.internal:3000/api/webhooks/livekit
+    - http://host.docker.internal:3001/api/webhooks/livekit
 
 redis:
   address: redis:6379
