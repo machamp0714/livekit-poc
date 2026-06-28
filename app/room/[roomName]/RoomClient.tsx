@@ -14,9 +14,22 @@ type Props = { roomName: string; name: string; role: Role };
 
 export function RoomClient({ roomName, name, role }: Props) {
   const router = useRouter();
-  const [identity] = useState(
-    () => `${name}-${Math.random().toString(36).slice(2, 8)}`,
-  );
+  // identity をリロード（JS コンテキスト消失）をまたいで永続化する。
+  // sessionStorage はタブを閉じると消える＝「同一セッション」の意味論に一致。
+  // 同一 identity で再接続すると LiveKit が古い接続を DuplicateIdentity で
+  // 切断し、新しい接続を通すため「同じ参加者として復帰」が成立する。
+  const [identity] = useState(() => {
+    // SSR 時は sessionStorage が無い。ここで返す値は使われず、
+    // クライアントの hydration 時に initializer が再実行されて確定する
+    // （identity は描画に出ないので hydration mismatch にならない）。
+    if (typeof window === 'undefined') return `${name}-pending`;
+    const key = `lk-identity-${roomName}`;
+    const existing = window.sessionStorage.getItem(key);
+    if (existing) return existing;
+    const fresh = `${name}-${crypto.randomUUID()}`;
+    window.sessionStorage.setItem(key, fresh);
+    return fresh;
+  });
   const [token, setToken] = useState<string | null>(null);
   const [serverUrl, setServerUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
